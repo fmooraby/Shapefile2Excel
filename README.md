@@ -10,7 +10,7 @@ Python and vba tool to import Ersi Shapefile as Shapes into Excel.
 
 ## Instructions (from Excel)
 1) Click on "RUN SHAPEFILE2EXCEL" button
-2) In File DIalog, select Shapefile to Open
+2) In File Dialog, select Shapefile to Open
 
 ## Output (in Excel)
 1) 3 Sheets are created "MAPS", "MAPS META", "MAPS META GRP"
