@@ -1,5 +1,17 @@
 # Shapefile2Excel
-Python tool to import Ersi Shapefile as Shapes into Excel. 
+Python and vba tool to import Ersi Shapefile as Shapes into Excel. 
+
+# Requirement
+1) MS Excel
+2) Anaconda Python 3.8
+
+# Initial Instructions:
+   # In Excel Spreadsheet (attached)
+1) In Main, Cell B2, Enter location of where batch file (of this package) is saved
+2) In Main, Cell B3, Enter location of where python script (part of this package) is saved
+
+   # In Command Batch file (python_script.bat, attached)
+1) Replace "[ROOT FOLDER FOR ANACONDA]" with location where python Anaconda is installed
 
    Copyright 2021 Rahman Mohamud Faisal MOORABY                                
    Licensed under the Apache License, Version 2.0 (the "License");             
