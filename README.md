@@ -4,7 +4,7 @@ Python and vba tool to import Ersi Shapefile as Shapes into Excel.
 ## Files
 1) README.md - This File
 2) LICENSE - Apache License 
-3) load_shapes_to_excel_GITHUB.xlsm - Excel Spreadsheet and Macro to complete Shape creation from ERSI Shapefile
+3) load_shapes_to_excel.xlsm - Excel Spreadsheet and Macro to complete Shape creation from ERSI Shapefile
 4) main.py - Python Script to create input to Excel VBA, from ERSI Shapefile (controlled from VBA)
 5) python_script.bat - Batch file, which runs Python and called from VBA
 
