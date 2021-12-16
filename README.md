@@ -9,7 +9,7 @@ Python and vba tool to import Ersi Shapefile as Shapes into Excel.
 5) python_script - GITHUB.bat - Batch file, which runs Python and called from VBA
 
 ## Instructions (from Excel)
-1) Click on ###"RUN SHAPEFILE2EXCEL"### button
+1) Click on **"RUN SHAPEFILE2EXCEL"** button
 2) In File Dialog, select Shapefile to Open
 
 ## Output (in Excel)
