@@ -6,6 +6,18 @@ Python and vba tool to import Ersi Shapefile as Shapes into Excel.
 2) LICENSE - Apache License 
 3) load_shapes_to_excel_GITHUB.xlsm - Excel Spreadsheet and Macro to complete Shape creation from ERSI Shapefile
 4) main.py - Python Script to create input to Excel VBA, from ERSI Shapefile (controlled from VBA)
+5) python_script - GITHUB.bat - Batch file, which runs Python and called from VBA
+
+## Instructions (from Excel)
+1) Click on "RUN SHAPEFILE2EXCEL" button
+2) In File DIalog, select Shapefile to Open
+
+## Output (in Excel)
+1) 3 Sheets are created "MAPS", "MAPS META", "MAPS META GRP"
+   - "MAPS" will contain the Shapes polygons
+   - "MAPS META" will contain the Shape Ids, Group Ids (parent), Group Name (Parent Group Name - for multipolygons), and Name (Polygon Name)
+   - "MAPS META GRP" contains the hierarchie of parents and children relationship
+2) Each Polygon is grouped and named as per Group Name (Sub polygons are named as per Name)
 
 ## Requirement
 1) MS Excel
