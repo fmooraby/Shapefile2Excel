@@ -1,9 +1,22 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Sep 18 18:29:14 2020
+#####################################
+#___________________________________#
+###         SHAPEFILE2EXCEL       ###
+#-----------------------------------#
+#####################################
 
-@author: RMooraby
-"""
+
+#################################################################################
+#   Copyright 2021 Rahman Mohamud Faisal MOORABY                                #
+#   Licensed under the Apache License, Version 2.0 (the "License");             #
+#   you may not use this file except in compliance with the License.            #
+#   You may obtain a copy of the License at                                     #
+#       http://www.apache.org/licenses/LICENSE-2.0                              #
+#   Unless required by applicable law or agreed to in writing, software         #
+#   distributed under the License is distributed on an "AS IS" BASIS,           #
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    #
+#   See the License for the specific language governing permissions and         #
+#   limitations under the License.                                              #
+#################################################################################
 
 #### LIBRARIES
 import geopandas as gdx
@@ -12,6 +25,7 @@ import numpy as np
 import math as mt
 import ntpath as p
 import sys
+import csv
 
 ##### FUNCTION TO TRANSLATE SHAPEFLE TO STRING OF X AND Y COORDINATES
 #####     fname : file location of shafile
@@ -19,7 +33,7 @@ import sys
 #####     H     : Overall height of Excel Shapefile in px
 #####     X_off : Horizontal offset from top-left corner of Excel Sheet in px
 #####     Y_off : Vertical offset from top-left corner of Excel Sheet in px
-def translate_shapefile(fname, W, H, X_off, Y_off):
+def translate_shapefile(fname, W, H, X_off, Y_off, simplify):
 
     #### LOAD SHAPEFILE
     fpath, base = p.split(fname) # GET FOLDER OF FILE
@@ -30,8 +44,8 @@ def translate_shapefile(fname, W, H, X_off, Y_off):
     gdf3 = gdf.explode()            # EXPLODE MULTIPOLYGONS TO POLYGONS
 
     #### CREATE X, Y COLUMNS
-    gdf3['y'] = np.nan
-    gdf3['x'] = np.nan
+    gdf3['y'] = ''#np.nan
+    gdf3['x'] = ''#np.nan
 
     #### for diagnosis
     gdf4 = gdf3.copy()
@@ -52,20 +66,33 @@ def translate_shapefile(fname, W, H, X_off, Y_off):
     X_SCALE = mt.floor(WIDTH / (max_x - min_x))
     Y_SCALE = mt.floor(HEIGHT / (max_y - min_y))
 
+    #### Simplification if simplify is True
+    if simplify == True:
+        gdf = gdf.simplify(0.05, preserve_topology=False)
+
     ### FOR EACH ROW IN SHAPEFILE
     for i, r in gdf3.iterrows():
         r['x'] = (X_SCALE * (np.array(r['geometry'].exterior.coords.xy[0], dtype=np.float32) - min_x)) + X_OFFSET # Convert each x coordinates in polygon to excel px value
         r['y'] = (Y_SCALE * (max_y - np.array(r['geometry'].exterior.coords.xy[1], dtype=np.float32))) + Y_OFFSET # Convert each y coordinates in polygon to excel px value
+        xstr = ', '.join(str(item) for item in r['x'].tolist())
+        ystr = ', '.join(str(item) for item in r['y'].tolist())
+
 
         ##### CREATE STRING LIST OF X AND Y COORDINATES OF POINTS OF POLYGONS
-        gdf3['x'][i] = ', '.join(r['x'].astype('str'))
-        gdf3['y'][i] = ', '.join(r['y'].astype('str'))
-
-        gdf4['x'][i] = ', '.join(np.array(r['geometry'].exterior.coords.xy[0], dtype=np.float32).astype('str'))
-        gdf4['y'][i] = ', '.join(np.array(r['geometry'].exterior.coords.xy[1], dtype=np.float32).astype('str'))
+        gdf3.at[i, 'x'] = xstr
+        gdf3.at[i, 'y'] = ystr
 
     df1 = pd.DataFrame(gdf3.drop(columns='geometry'))
-    df1.to_csv(fname.replace(base, "out.csv"), index_label='ind1, ind2')
+
+    #### SAVE TO OUT.CSV. REST OF PROCESS IS THROUGH VBA
+    df1.to_csv(fname.replace(base, "out.csv"), index_label = 'ind') ### INDEX_LABEL CONTAINS 'GROUP ID AND SUB ID FOR VBA MACRO
+    number_of_rows = len(df1.index)
+    number_of_columns = len(df1.columns)
+
+    with open(fname.replace(base, "summary.csv"), 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['row', number_of_rows, 'column', number_of_columns])
+
 
 #### MAIN OF PYTHON SCRIPT
 if __name__ == '__main__':
@@ -78,7 +105,7 @@ if __name__ == '__main__':
     X_off = 50      # DEFAULT HORIZONTAL OFFSET FROM TOP-LEFT CORNER OF EXCEL SHEET
     Y_off = 50      # DEFAULT VERTICAL OFFSET FROM TOP-LEFT CORNER OF EXCEL SHEET
     fname = ""      # DEFAULT FILE PATH IS BLANK and will return error
-
+    simplify = True
     print("Process Parameters")
     print(args)
     for a in args:
@@ -98,14 +125,26 @@ if __name__ == '__main__':
         if a[:5].lower() == "file=":    # Get file path
             fname = a[5:]
             print(a[5:])
+        if a[:9].lower() == "simplify=":    # Get file path
+            simplify = False if a[9:1]=='F' else True
+            print(simplify)
+            print(a[9:1])
+            print(a[9:])
 
     print("End Process Parameters")
+    print(W)
+    print(H)
+    print(X_off)
+    print(Y_off)
+    print(simplify)
 
     # check if there is a file name as input
     if fname != "":                                         # yes, there is a file name as input
         print("All good to proceed!")
-        translate_shapefile(fname, W, H, X_off, Y_off)      # run process to get shapefile as CSV
+        translate_shapefile(fname, W, H, X_off, Y_off, simplify)      # run process to get shapefile as CSV
     else:
         print("Make sure you enter a valid file path")      # terminate
+        fname = r'C:\Users\RMooraby\Downloads\vg-hist.utm32s.shape\vg-hist.utm32s.shape\daten\utm32s\shape\VG-Hist_1990-10-03_RBZ.shp'
+        translate_shapefile(fname, W, H, X_off, Y_off, simplify)  # run process to get shapefile as CSV
 
     print("End of Process")
